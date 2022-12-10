@@ -75,7 +75,7 @@ passport.deserializeUser(function (dataUser, done) {
 /* --------------------- MIDDLEWARE --------------------------- */
 
 app.use(session({
-    secret: 'shhhhhhhhhhhhhhhhhhhhh',
+    secret: 'secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
