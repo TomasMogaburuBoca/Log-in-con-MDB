@@ -7,6 +7,8 @@ const { Strategy: LocalStrategy } = require('passport-local');
 const mongoose = require ('mongoose');
 require('dotenv').config();
 const {dataUser} = (mongoose);
+
+
 /*-------------MONGOOSE---------------------*/
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -178,6 +180,33 @@ app.get('/logout', (req, res) => {
 app.get('/', isAuth, (req, res) => {
     res.redirect('/datos')
 })
+
+
+/*------------MINIMIST----------------*/
+        //Require Minimist
+const parseArgs = require ('minimist')
+//const { infoArgs } =  require('./info');
+
+const info = {
+    alias:{
+        np: "nombrePlataforma",
+        vn: "versionNode",
+        rss: "memoriaTotal",
+        pe: "pathEjecucion",
+        pf: "carpetaProyecto"
+    }
+}
+const commandLinesArg = process.argv.slice(2)
+const { np, vn, rss, pe, pf, _ } = parseArgs(commandLinesArg, info);
+
+const infoArgs= { np, vn, rss, pe, pf, _ }
+console.log(infoArgs);
+
+app.get ('/info', (req, res) =>{
+    //res.render('info')
+    res.send({infoArgs})
+})
+//iniciado en dependencias "npm run startInfo"
 
 /* --------- LISTEN ---------- */
 const PORT = process.env.PORT
