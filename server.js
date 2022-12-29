@@ -7,6 +7,40 @@ const { Strategy: LocalStrategy } = require('passport-local');
 const mongoose = require ('mongoose');
 require('dotenv').config();
 const {dataUser} = (mongoose);
+const cluster = require ('cluster')
+const numCPUs = require ('os').cpus().length
+
+/*CLUSTER*/
+
+
+
+if (cluster.isPrimary){
+    console.log(numCPUs);
+    console.log(process.pid);
+
+    for (i = 0; i < numCPUs; i++){
+        cluster.fork()
+    }
+
+    cluster.on('exit', worker => {
+        console.log(`Worker ${worker.process.pid} is died`);
+        cluster.fork();
+    })
+
+} else{
+    const PORT = process.env.PORT || 8080;
+    app.get('/', (req, res) =>{
+        res.send(`Server in ${PORT} -- PID: ${process.pid} -- ${newDate().toLocalString()}`);
+    })
+
+    app.listen(PORT, err =>{
+        if (!err){
+            console.log(`Server in ${PORT} --PID WORKER ${process.pid}`);
+        }
+    } )
+}
+
+/*--------------*/
 
 
 /*-------------MONGOOSE---------------------*/
@@ -200,7 +234,7 @@ const commandLinesArg = process.argv.slice(2)
 const { np, vn, rss, pe, pf, _ } = parseArgs(commandLinesArg, info);
 
 const infoArgs= { np, vn, rss, pe, pf, _ }
-console.log(infoArgs);
+//console.log(infoArgs);
 
 app.get ('/info', (req, res) =>{
     //res.render('info')
@@ -208,9 +242,37 @@ app.get ('/info', (req, res) =>{
 })
 //iniciado en dependencias "npm run startInfo"
 
+
+// 
+
+// if (cluster.isMaster){
+//     console.log(`Master ${process.pid} is running`)
+
+//     for (let i = 0; i < numCPU; i++){
+//         cluster.fork()
+//     }
+// } else{
+//     app.listen(PORT, () =>{
+//         console.log(`Worker ${process.pid} started`);
+//     })
+// }
+
+/* -----------FOREVER-------------- */
+// const PORT = parseInt(process.argv[2]) || 8080
+
+// app.get('/forever', (req, res) => {
+//     res.send(`Servidor express <span style="color:red;">(forever)</span> en ${PORT} - <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`)
+// })
+
+// app.listen(PORT, err => {
+//     if (!err) console.log(`Servidor express escuchando en el puerto ${PORT} - PID WORKER ${process.pid}`)
+// })
+/* ------------------------- */
+
+/* ------------------------- */
 /* --------- LISTEN ---------- */
-const PORT = process.env.PORT
-const server = app.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`)
-})
-server.on("error", error => console.log(`Error en servidor: ${error}`))
+// const PORT = process.env.PORT
+// const server = app.listen(PORT, () => {
+//     console.log(`Servidor escuchando en el puerto ${PORT}`)
+// })
+// server.on("error", error => console.log(`Error en servidor: ${error}`))
