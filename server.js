@@ -5,13 +5,17 @@ const exphbs = require('express-handlebars');
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 const mongoose = require ('mongoose');
-require('dotenv').config();
+const dotenv = require('dotenv')
+dotenv.config();
 const {dataUser} = (mongoose);
 const cluster = require ('cluster')
 const numCPUs = require ('os').cpus().length
 
-/*CLUSTER*/
+const MONGODB_URI = process.env.MONGODB_URI;
+const PORT = parseInt(process.argv[2]) || 8082;
 
+
+/*CLUSTER*/
 
 
 if (cluster.isPrimary){
@@ -22,15 +26,15 @@ if (cluster.isPrimary){
         cluster.fork()
     }
 
-    cluster.on('exit', worker => {
-        console.log(`Worker ${worker.process.pid} is died`);
-        cluster.fork();
-    })
+    // cluster.on('exit', worker => {
+    //     console.log(`Worker ${worker.process.pid} is died`);
+    //     cluster.fork();
+    // })
+
 
 } else{
-    const PORT = process.env.PORT || 8080;
     app.get('/', (req, res) =>{
-        res.send(`Server in ${PORT} -- PID: ${process.pid} -- ${newDate().toLocalString()}`);
+        res.send(`Server in ${PORT} -- PID: ${process.pid} -- `);
     })
 
     app.listen(PORT, err =>{
@@ -45,14 +49,13 @@ if (cluster.isPrimary){
 
 /*-------------MONGOOSE---------------------*/
 
-const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI,{
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-mongoose.set('strictQuery', true);
+mongoose.set('strictQuery', false);
 
 // /* ------------------ DATABASE -------------------- */
 
