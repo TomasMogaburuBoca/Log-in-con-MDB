@@ -34,7 +34,9 @@ if (cluster.isPrimary){
 
 } else{
     app.get('/', (req, res) =>{
-        res.send(`Server in ${PORT} -- PID: ${process.pid} -- `);
+        let date = new Date();
+        res.send(`Server in ${PORT} -- PID: ${process.pid} -- ${date}
+        <div><button class="btn btn-success my-3" onclick="location.href = '/register'">Ir a Register</button></div>`);
     })
 
     app.listen(PORT, err =>{
